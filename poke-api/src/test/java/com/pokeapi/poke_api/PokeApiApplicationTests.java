@@ -6,8 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class PokeApiApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+    // TODO remove this test if not used
+    @Test
+    void contextLoads() {}
 }
