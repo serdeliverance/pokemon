@@ -52,7 +52,6 @@ spotless {
 		formatAnnotations()
 	}
 }
-
 testing {
 	suites {
 		test {
