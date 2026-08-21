@@ -18,6 +18,7 @@ public class PokemonController {
 
     @GetMapping
     public ResponseEntity<List<PokemonSummaryDto>> getPaginated(int page, int size) {
+        // TODO validate page and size input params
         var pokemonList = listPokemonUseCase.listPokemons(page, size).stream()
                 .map(pokemonMapper::mapToPokemonSummaryDto)
                 .toList();

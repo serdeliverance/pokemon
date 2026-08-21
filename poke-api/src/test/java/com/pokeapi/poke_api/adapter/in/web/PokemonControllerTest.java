@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,8 +33,7 @@ class PokemonControllerTest {
     @Test
     void shouldReturnPaginatedPokemons() throws Exception {
         when(listPokemonUseCase.listPokemons(2, 10)).thenReturn(PokemonFixtures.pokemonList());
-
-        var expected = List.of(
+        when(pokemonMapper.mapToPokemonSummaryDto(any())).thenReturn(
                 new PokemonSummaryDto(
                         1,
                         "bulbasaur",
@@ -54,21 +54,25 @@ class PokemonControllerTest {
                         List.of("https://someurl/sprites/pokemon/back/1.png", "https://someurl/sprites/pokemon/front/2.png"))
         );
 
-        mockMvc.perform(get("/pokemons/page=2&size=10")).andExpect(status().isOk())
+        mockMvc.perform(get("/pokemons?page=2&size=10")).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].name").value("bulbasaur"))
-                .andExpect(jsonPath("$[0].type").value("Electric"))
-                .andExpect(jsonPath("$[1].name").value("Charmander"))
-                .andExpect(jsonPath("$[*].name", containsInAnyOrder("Pikachu", "Charmander")));
+                .andExpect(jsonPath("$[0].category", containsInAnyOrder("poison", "grass")))
+                .andExpect(jsonPath("$[1].name").value("charmander"))
+                .andExpect(jsonPath("$[*].name", containsInAnyOrder("bulbasaur", "squirtle", "charmander")));
     }
 
     @Test
-    void shouldReturnEmptyListWhenNoPokemonExist() {
-        // TODO
+    void shouldReturnEmptyListWhenNoPokemonExist() throws Exception {
+        when(listPokemonUseCase.listPokemons(2, 10)).thenReturn(List.of());
+
+        mockMvc.perform(get("/pokemons?page=2&size=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
     void shouldReturn500WhenErrorDownstream() {
-        // TODO
+        // TODO implement (this would lead to the implementation of ControllerAdvice)
     }
 }
