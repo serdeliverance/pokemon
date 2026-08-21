@@ -48,6 +48,7 @@ class PokemonControllerIT {
 
     @Test
     void returnsPokemonPage() throws IOException {
+        // TODO fix error in stub, it is going against the real service instead.
         pokeApiMock.stubFor(get(urlPathEqualTo("/pokemon"))
                 .withQueryParam("offset", equalTo("1"))
                 .withQueryParam("limit", equalTo("5"))
