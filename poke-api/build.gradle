@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '4.1.0'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'com.diffplug.spotless' version '8.10.0'
+	id 'jvm-test-suite'
 }
 
 group = 'com.pokeapi'
@@ -32,7 +33,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-jooq-test'
 //	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+//	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -44,10 +45,6 @@ dependencyManagement {
 	}
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
 spotless {
 	java {
 		palantirJavaFormat()
@@ -55,3 +52,43 @@ spotless {
 		formatAnnotations()
 	}
 }
+
+testing {
+	suites {
+		test {
+			useJUnitJupiter()
+		}
+
+		integrationTest(JvmTestSuite) {
+			useJUnitJupiter()
+
+			dependencies {
+				implementation project()
+				implementation 'org.springframework.boot:spring-boot-starter-test'
+				implementation 'org.springframework.boot:spring-boot-starter-restclient-test'
+				implementation 'org.springframework.boot:spring-boot-resttestclient'
+				implementation 'org.wiremock:wiremock-jetty12:3.13.2'
+			}
+
+			targets {
+				all {
+					testTask.configure {
+						shouldRunAfter(test)
+					}
+				}
+			}
+		}
+	}
+}
+
+// TODO have an extra lock to this workaround
+// to avoid transitive dependency conflicts due to wiremock-jetty12
+configurations.integrationTestRuntimeClasspath {
+	resolutionStrategy.eachDependency { details ->
+		if (details.requested.group in ['org.eclipse.jetty', 'org.eclipse.jetty.ee10', 'org.eclipse.jetty.http2', 'org.eclipse.jetty.compression']) {
+			details.useVersion('12.1.10')
+		}
+	}
+}
+
+check.dependsOn testing.suites.integrationTest

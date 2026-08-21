@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PokemonMapper {
     public PokemonSummaryDto mapToPokemonSummaryDto(Pokemon pokemon) {
-        return new PokemonSummaryDto(pokemon.id(), pokemon.name(), pokemon.category(), pokemon.skills(), pokemon.sprites());
+        return new PokemonSummaryDto(
+                pokemon.id(), pokemon.name(), pokemon.category(), pokemon.skills(), pokemon.sprites());
     }
 }

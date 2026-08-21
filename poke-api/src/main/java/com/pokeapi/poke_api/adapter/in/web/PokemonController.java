@@ -1,6 +1,8 @@
 package com.pokeapi.poke_api.adapter.in.web;
 
 import com.pokeapi.poke_api.application.port.in.ListPokemonUseCase;
+
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ public class PokemonController {
         // TODO validate page and size input params
         var pokemonList = listPokemonUseCase.listPokemons(page, size).stream()
                 .map(pokemonMapper::mapToPokemonSummaryDto)
+                .sorted(Comparator.comparingInt(PokemonSummaryDto::id))
                 .toList();
         return ResponseEntity.ok(pokemonList);
     }

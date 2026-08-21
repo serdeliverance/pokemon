@@ -12,20 +12,25 @@ public class PokemonFixtures {
                         "bulbasaur",
                         List.of("grass", "poison"),
                         List.of("swords-dance", "razor-wind"),
-                        List.of("https://someurl/sprites/pokemon/back/1.png", "https://someurl/sprites/pokemon/front/2.png")),
+                        List.of(
+                                "https://someurl/sprites/pokemon/back/1.png",
+                                "https://someurl/sprites/pokemon/front/2.png")),
                 new Pokemon(
                         4,
                         "charmander",
                         List.of("fire"),
                         List.of("fire-punch"),
-                        List.of("https://someurl/sprites/pokemon/back/1.png", "https://someurl/sprites/pokemon/front/2.png")),
+                        List.of(
+                                "https://someurl/sprites/pokemon/back/1.png",
+                                "https://someurl/sprites/pokemon/front/2.png")),
                 new Pokemon(
                         1,
                         "squirtle",
                         List.of("water"),
                         List.of("bubble", "aqua-tail"),
-                        List.of("https://someurl/sprites/pokemon/back/1.png", "https://someurl/sprites/pokemon/front/2.png"))
-        );
+                        List.of(
+                                "https://someurl/sprites/pokemon/back/1.png",
+                                "https://someurl/sprites/pokemon/front/2.png")));
     }
 
     public static Pokemon pokemon() {
