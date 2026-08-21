@@ -28,6 +28,8 @@ class PokemonControllerIT {
 
     static WireMockServer pokeApiMock = new WireMockServer(0);
 
+    // TODO add postgres test container (we are getting a warning on start up because of that)
+
     @BeforeAll
     static void startWireMock() {
         pokeApiMock.start();
