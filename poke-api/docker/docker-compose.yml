@@ -1,0 +1,13 @@
+services:
+  pkm-postgres:
+    image: postgres:18.4
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/18/docker
+      - ./postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "45432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
