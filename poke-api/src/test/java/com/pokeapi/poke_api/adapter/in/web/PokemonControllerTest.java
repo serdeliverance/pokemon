@@ -8,9 +8,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.pokeapi.poke_api.application.port.in.GetPokemonDetailUseCase;
 import com.pokeapi.poke_api.application.port.in.ListPokemonUseCase;
 import com.pokeapi.poke_api.support.PokemonFixtures;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -25,6 +27,9 @@ class PokemonControllerTest {
 
     @MockitoBean
     private ListPokemonUseCase listPokemonUseCase;
+
+    @MockitoBean
+    private GetPokemonDetailUseCase getPokemonDetailUseCase;
 
     @MockitoBean
     private PokemonMapper pokemonMapper;
@@ -90,5 +95,42 @@ class PokemonControllerTest {
     @Test
     void shouldReturn500WhenErrorDownstream() {
         // TODO implement (this would lead to the implementation of ControllerAdvice)
+    }
+
+    @Test
+    void shouldReturnPokemonDetail() throws Exception {
+        when(getPokemonDetailUseCase.getPokemonDetail(1)).thenReturn(Optional.of(PokemonFixtures.pokemonDetail()));
+        when(pokemonMapper.mapToPokemonDetailDto(any()))
+                .thenReturn(new PokemonDetailDto(
+                        1,
+                        "bulbasaur",
+                        List.of("grass", "poison"),
+                        List.of("swords-dance", "razor-wind"),
+                        List.of(
+                                "https://someurl/sprites/pokemon/back/1.png",
+                                "https://someurl/sprites/pokemon/front/2.png"),
+                        List.of(new PokemonStatDto("hp", 45)),
+                        "A strange seed was planted on its back at birth.",
+                        List.of(new EvolutionStageDto(1, "bulbasaur", 1), new EvolutionStageDto(2, "ivysaur", 2))));
+
+        mockMvc.perform(get("/pokemons/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("bulbasaur"))
+                .andExpect(jsonPath("$.stats[0].name").value("hp"))
+                .andExpect(jsonPath("$.description").value("A strange seed was planted on its back at birth."))
+                .andExpect(jsonPath("$.evolutionChain", hasSize(2)))
+                .andExpect(jsonPath("$.evolutionChain[1].name").value("ivysaur"));
+    }
+
+    @Test
+    void shouldReturn404WhenPokemonNotFound() throws Exception {
+        when(getPokemonDetailUseCase.getPokemonDetail(9999)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/pokemons/9999")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400WhenIdIsInvalid() throws Exception {
+        mockMvc.perform(get("/pokemons/0")).andExpect(status().isBadRequest());
     }
 }
