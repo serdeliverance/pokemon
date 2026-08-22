@@ -2,6 +2,18 @@
 
 You can find more details on how to run each project in their respective folders.
 
+## Stack Overview
+
+// TODO
+
+## Architecture
+
+// TODO
+
+## Timeline
+
+// TODO
+
 ## Out of scope (or things I wish it were added)
 
 - CI/CD flow with github actions, deploying containarized components images (poke-api, poke-fe, postgres)
