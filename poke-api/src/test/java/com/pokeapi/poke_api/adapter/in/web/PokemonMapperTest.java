@@ -42,4 +42,14 @@ class PokemonMapperTest {
         var result = subject.mapToPokemonDetailDto(PokemonFixtures.pokemonDetail());
         assertThat(result).isEqualTo(expected);
     }
+
+    @Test
+    void shouldMapToPokemonPaginatedResponseDto() {
+        var result = subject.mapToPokemonPaginatedResponseDto(PokemonFixtures.pokemonPage());
+
+        assertThat(result.total()).isEqualTo(1302);
+        assertThat(result.page()).isEqualTo(2);
+        assertThat(result.size()).isEqualTo(10);
+        assertThat(result.pokemons()).extracting(PokemonSummaryDto::id).containsExactly(1, 1, 4);
+    }
 }

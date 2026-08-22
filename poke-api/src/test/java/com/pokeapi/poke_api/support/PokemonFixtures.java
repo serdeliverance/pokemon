@@ -3,6 +3,7 @@ package com.pokeapi.poke_api.support;
 import com.pokeapi.poke_api.domain.EvolutionStage;
 import com.pokeapi.poke_api.domain.Pokemon;
 import com.pokeapi.poke_api.domain.PokemonDetail;
+import com.pokeapi.poke_api.domain.PokemonPage;
 import com.pokeapi.poke_api.domain.PokemonStat;
 import java.util.List;
 
@@ -34,6 +35,10 @@ public class PokemonFixtures {
                         List.of(
                                 "https://someurl/sprites/pokemon/back/1.png",
                                 "https://someurl/sprites/pokemon/front/2.png")));
+    }
+
+    public static PokemonPage pokemonPage() {
+        return new PokemonPage(pokemonList(), 1302, 2, 10);
     }
 
     public static Pokemon pokemon() {

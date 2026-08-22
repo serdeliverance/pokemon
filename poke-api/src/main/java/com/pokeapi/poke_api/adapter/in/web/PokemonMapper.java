@@ -2,6 +2,8 @@ package com.pokeapi.poke_api.adapter.in.web;
 
 import com.pokeapi.poke_api.domain.Pokemon;
 import com.pokeapi.poke_api.domain.PokemonDetail;
+import com.pokeapi.poke_api.domain.PokemonPage;
+import java.util.Comparator;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,6 +11,14 @@ public class PokemonMapper {
     public PokemonSummaryDto mapToPokemonSummaryDto(Pokemon pokemon) {
         return new PokemonSummaryDto(
                 pokemon.id(), pokemon.name(), pokemon.category(), pokemon.skills(), pokemon.sprites());
+    }
+
+    public PokemonPaginatedResponseDto mapToPokemonPaginatedResponseDto(PokemonPage pokemonPage) {
+        var pokemons = pokemonPage.pokemons().stream()
+                .map(this::mapToPokemonSummaryDto)
+                .sorted(Comparator.comparingInt(PokemonSummaryDto::id))
+                .toList();
+        return new PokemonPaginatedResponseDto(pokemons, pokemonPage.total(), pokemonPage.page(), pokemonPage.size());
     }
 
     public PokemonDetailDto mapToPokemonDetailDto(PokemonDetail pokemon) {
