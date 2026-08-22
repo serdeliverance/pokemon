@@ -1,8 +1,7 @@
 package com.pokeapi.poke_api.application.port.in;
 
-import com.pokeapi.poke_api.domain.Pokemon;
-import java.util.List;
+import com.pokeapi.poke_api.domain.PokemonPage;
 
 public interface ListPokemonUseCase {
-    List<Pokemon> listPokemons(int page, int size);
+    PokemonPage listPokemons(int page, int size);
 }

@@ -5,6 +5,7 @@ import com.pokeapi.poke_api.application.port.out.PokemonProvider;
 import com.pokeapi.poke_api.domain.EvolutionStage;
 import com.pokeapi.poke_api.domain.Pokemon;
 import com.pokeapi.poke_api.domain.PokemonDetail;
+import com.pokeapi.poke_api.domain.PokemonPage;
 import com.pokeapi.poke_api.domain.PokemonStat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -30,14 +31,16 @@ public class PokemonApiClient implements PokemonProvider {
     // TODO add caching
     // TODO add resilience4j
     @Override
-    public List<Pokemon> getPokemonPage(int page, int size) {
+    public PokemonPage getPokemonPage(int page, int size) {
         PokemonListResponse list = fetchList(page, size);
 
-        return list.results().stream()
+        List<Pokemon> pokemons = list.results().stream()
                 .map(item -> extractId(item.url()))
                 .map(this::fetchDetail)
                 .map(this::toDomain)
                 .toList();
+
+        return new PokemonPage(pokemons, list.count(), page, size);
     }
 
     @Override
