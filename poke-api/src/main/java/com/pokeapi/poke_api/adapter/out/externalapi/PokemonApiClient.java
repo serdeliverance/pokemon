@@ -5,7 +5,8 @@ import com.pokeapi.poke_api.application.port.out.PokemonProvider;
 import com.pokeapi.poke_api.domain.EvolutionStage;
 import com.pokeapi.poke_api.domain.Pokemon;
 import com.pokeapi.poke_api.domain.PokemonDetail;
-import com.pokeapi.poke_api.domain.PokemonPage;
+import com.pokeapi.poke_api.domain.PokemonEnrichment;
+import com.pokeapi.poke_api.domain.PokemonIdPage;
 import com.pokeapi.poke_api.domain.PokemonStat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -28,19 +29,24 @@ public class PokemonApiClient implements PokemonProvider {
         this.restClient = builder.baseUrl(externalApiBaseUrl).build();
     }
 
-    // TODO add caching
     // TODO add resilience4j
     @Override
-    public PokemonPage getPokemonPage(int page, int size) {
+    public PokemonIdPage getPokemonIdPage(int page, int size) {
         PokemonListResponse list = fetchList(page, size);
 
-        List<Pokemon> pokemons = list.results().stream()
-                .map(item -> extractId(item.url()))
-                .map(this::fetchDetail)
-                .map(this::toDomain)
-                .toList();
+        List<Integer> ids =
+                list.results().stream().map(item -> extractId(item.url())).toList();
 
-        return new PokemonPage(pokemons, list.count(), page, size);
+        return new PokemonIdPage(ids, list.count());
+    }
+
+    @Override
+    public Optional<Pokemon> getPokemonById(int id) {
+        try {
+            return Optional.of(toDomain(fetchDetail(id)));
+        } catch (HttpClientErrorException.NotFound e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -95,7 +101,8 @@ public class PokemonApiClient implements PokemonProvider {
                 sprites(detail),
                 stats(detail),
                 description(species),
-                evolutionStages(evolutionChain));
+                evolutionStages(evolutionChain),
+                PokemonEnrichment.empty(detail.id()));
     }
 
     private List<String> category(PokemonDetailResponse dto) {

@@ -10,4 +10,10 @@ public record PokemonDetail(
         List<String> sprites,
         List<PokemonStat> stats,
         String description,
-        List<EvolutionStage> evolutionChain) {}
+        List<EvolutionStage> evolutionChain,
+        PokemonEnrichment enrichment) {
+
+    public PokemonDetail withEnrichment(PokemonEnrichment enrichment) {
+        return new PokemonDetail(id, name, category, skills, sprites, stats, description, evolutionChain, enrichment);
+    }
+}

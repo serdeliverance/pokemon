@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.pokeapi.poke_api.support.PokemonFixtures;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class PokemonMapperTest {
@@ -38,7 +39,8 @@ class PokemonMapperTest {
                 List.of(
                         new EvolutionStageDto(1, "bulbasaur", 1),
                         new EvolutionStageDto(2, "ivysaur", 2),
-                        new EvolutionStageDto(3, "venusaur", 3)));
+                        new EvolutionStageDto(3, "venusaur", 3)),
+                Map.of());
         var result = subject.mapToPokemonDetailDto(PokemonFixtures.pokemonDetail());
         assertThat(result).isEqualTo(expected);
     }

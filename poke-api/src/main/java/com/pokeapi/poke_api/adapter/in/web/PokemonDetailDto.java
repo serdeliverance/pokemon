@@ -1,6 +1,7 @@
 package com.pokeapi.poke_api.adapter.in.web;
 
 import java.util.List;
+import java.util.Map;
 
 public record PokemonDetailDto(
         int id,
@@ -10,4 +11,5 @@ public record PokemonDetailDto(
         List<String> sprites,
         List<PokemonStatDto> stats,
         String description,
-        List<EvolutionStageDto> evolutionChain) {}
+        List<EvolutionStageDto> evolutionChain,
+        Map<String, Object> enrichment) {}

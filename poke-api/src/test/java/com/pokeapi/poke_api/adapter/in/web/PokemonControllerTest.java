@@ -14,6 +14,7 @@ import com.pokeapi.poke_api.application.port.in.ListPokemonUseCase;
 import com.pokeapi.poke_api.domain.PokemonPage;
 import com.pokeapi.poke_api.support.PokemonFixtures;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +134,8 @@ class PokemonControllerTest {
                                 "https://someurl/sprites/pokemon/front/2.png"),
                         List.of(new PokemonStatDto("hp", 45)),
                         "A strange seed was planted on its back at birth.",
-                        List.of(new EvolutionStageDto(1, "bulbasaur", 1), new EvolutionStageDto(2, "ivysaur", 2))));
+                        List.of(new EvolutionStageDto(1, "bulbasaur", 1), new EvolutionStageDto(2, "ivysaur", 2)),
+                        Map.of()));
 
         mockMvc.perform(get("/pokemons/1"))
                 .andExpect(status().isOk())
