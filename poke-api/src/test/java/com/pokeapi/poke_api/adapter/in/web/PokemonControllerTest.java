@@ -3,6 +3,7 @@ package com.pokeapi.poke_api.adapter.in.web;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.pokeapi.poke_api.application.port.in.GetPokemonDetailUseCase;
 import com.pokeapi.poke_api.application.port.in.ListPokemonUseCase;
+import com.pokeapi.poke_api.domain.PokemonPage;
 import com.pokeapi.poke_api.support.PokemonFixtures;
 import java.util.List;
 import java.util.Optional;
@@ -36,50 +38,70 @@ class PokemonControllerTest {
 
     @Test
     void shouldReturnPaginatedPokemons() throws Exception {
-        when(listPokemonUseCase.listPokemons(2, 10)).thenReturn(PokemonFixtures.pokemonList());
-        when(pokemonMapper.mapToPokemonSummaryDto(any()))
-                .thenReturn(
-                        new PokemonSummaryDto(
-                                1,
-                                "bulbasaur",
-                                List.of("grass", "poison"),
-                                List.of("swords-dance", "razor-wind"),
-                                List.of(
-                                        "https://someurl/sprites/pokemon/back/1.png",
-                                        "https://someurl/sprites/pokemon/front/2.png")),
-                        new PokemonSummaryDto(
-                                4,
-                                "charmander",
-                                List.of("fire"),
-                                List.of("fire-punch"),
-                                List.of(
-                                        "https://someurl/sprites/pokemon/back/1.png",
-                                        "https://someurl/sprites/pokemon/front/2.png")),
-                        new PokemonSummaryDto(
-                                1,
-                                "squirtle",
-                                List.of("water"),
-                                List.of("bubble", "aqua-tail"),
-                                List.of(
-                                        "https://someurl/sprites/pokemon/back/1.png",
-                                        "https://someurl/sprites/pokemon/front/2.png")));
+        var pokemonPage = PokemonFixtures.pokemonPage();
+        when(listPokemonUseCase.listPokemons(2, 10)).thenReturn(pokemonPage);
+        when(pokemonMapper.mapToPokemonPaginatedResponseDto(pokemonPage))
+                .thenReturn(new PokemonPaginatedResponseDto(
+                        List.of(
+                                new PokemonSummaryDto(
+                                        1,
+                                        "bulbasaur",
+                                        List.of("grass", "poison"),
+                                        List.of("swords-dance", "razor-wind"),
+                                        List.of(
+                                                "https://someurl/sprites/pokemon/back/1.png",
+                                                "https://someurl/sprites/pokemon/front/2.png")),
+                                new PokemonSummaryDto(
+                                        4,
+                                        "charmander",
+                                        List.of("fire"),
+                                        List.of("fire-punch"),
+                                        List.of(
+                                                "https://someurl/sprites/pokemon/back/1.png",
+                                                "https://someurl/sprites/pokemon/front/2.png")),
+                                new PokemonSummaryDto(
+                                        1,
+                                        "squirtle",
+                                        List.of("water"),
+                                        List.of("bubble", "aqua-tail"),
+                                        List.of(
+                                                "https://someurl/sprites/pokemon/back/1.png",
+                                                "https://someurl/sprites/pokemon/front/2.png"))),
+                        1302,
+                        2,
+                        10));
 
         mockMvc.perform(get("/pokemons?page=2&size=10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].name").value("bulbasaur"))
-                .andExpect(jsonPath("$[0].category", containsInAnyOrder("poison", "grass")))
-                .andExpect(jsonPath("$[1].name").value("charmander"))
-                .andExpect(jsonPath("$[*].name", containsInAnyOrder("bulbasaur", "squirtle", "charmander")));
+                .andExpect(jsonPath("$.total").value(1302))
+                .andExpect(jsonPath("$.page").value(2))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.pokemons", hasSize(3)))
+                .andExpect(jsonPath("$.pokemons[0].name").value("bulbasaur"))
+                .andExpect(jsonPath("$.pokemons[0].category", containsInAnyOrder("poison", "grass")))
+                .andExpect(jsonPath("$.pokemons[1].name").value("charmander"))
+                .andExpect(jsonPath("$.pokemons[*].name", containsInAnyOrder("bulbasaur", "squirtle", "charmander")));
+    }
+
+    @Test
+    void shouldUseDefaultPageAndSizeWhenNotProvided() throws Exception {
+        when(listPokemonUseCase.listPokemons(0, 20)).thenReturn(PokemonFixtures.pokemonPage());
+
+        mockMvc.perform(get("/pokemons")).andExpect(status().isOk());
+
+        verify(listPokemonUseCase).listPokemons(0, 20);
     }
 
     @Test
     void shouldReturnEmptyListWhenNoPokemonExist() throws Exception {
-        when(listPokemonUseCase.listPokemons(2, 10)).thenReturn(List.of());
+        var emptyPage = new PokemonPage(List.of(), 0, 2, 10);
+        when(listPokemonUseCase.listPokemons(2, 10)).thenReturn(emptyPage);
+        when(pokemonMapper.mapToPokemonPaginatedResponseDto(emptyPage))
+                .thenReturn(new PokemonPaginatedResponseDto(List.of(), 0, 2, 10));
 
         mockMvc.perform(get("/pokemons?page=2&size=10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.pokemons", hasSize(0)));
     }
 
     @Test
