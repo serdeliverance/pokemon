@@ -2,12 +2,13 @@ import { Link } from 'react-router-dom'
 import type { Pokemon } from '../api/types'
 import { TypeBadge } from './TypeBadge'
 
-export function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
+export function PokemonCard({ pokemon, fromPage }: { pokemon: Pokemon; fromPage: number }) {
   const sprite = pokemon.sprites[0]
 
   return (
     <Link
       to={`/pokemons/${pokemon.id}`}
+      state={{ fromPage }}
       className="flex flex-col items-center gap-2 rounded-lg border border-neutral-200 p-4 transition hover:border-neutral-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-neutral-400"
     >
       <div className="flex h-24 w-24 items-center justify-center">
