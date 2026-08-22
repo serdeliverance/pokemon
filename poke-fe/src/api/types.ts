@@ -12,3 +12,20 @@ export interface PokemonPage {
   size: number
   total: number
 }
+
+export interface PokemonStat {
+  name: string
+  baseStat: number
+}
+
+export interface EvolutionStage {
+  id: number
+  name: string
+  stage: number
+}
+
+export interface PokemonDetail extends Pokemon {
+  stats: PokemonStat[]
+  description: string
+  evolutionChain: EvolutionStage[]
+}
