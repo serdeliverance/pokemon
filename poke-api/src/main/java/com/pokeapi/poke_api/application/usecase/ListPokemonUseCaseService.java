@@ -3,10 +3,9 @@ package com.pokeapi.poke_api.application.usecase;
 import com.pokeapi.poke_api.application.port.in.ListPokemonUseCase;
 import com.pokeapi.poke_api.application.port.out.PokemonProvider;
 import com.pokeapi.poke_api.domain.Pokemon;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
