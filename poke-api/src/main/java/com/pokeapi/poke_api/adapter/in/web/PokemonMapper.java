@@ -34,6 +34,7 @@ public class PokemonMapper {
                 pokemon.description(),
                 pokemon.evolutionChain().stream()
                         .map(stage -> new EvolutionStageDto(stage.id(), stage.name(), stage.stage()))
-                        .toList());
+                        .toList(),
+                pokemon.enrichment().attributes());
     }
 }

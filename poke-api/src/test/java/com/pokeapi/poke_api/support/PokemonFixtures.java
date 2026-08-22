@@ -3,9 +3,11 @@ package com.pokeapi.poke_api.support;
 import com.pokeapi.poke_api.domain.EvolutionStage;
 import com.pokeapi.poke_api.domain.Pokemon;
 import com.pokeapi.poke_api.domain.PokemonDetail;
+import com.pokeapi.poke_api.domain.PokemonEnrichment;
 import com.pokeapi.poke_api.domain.PokemonPage;
 import com.pokeapi.poke_api.domain.PokemonStat;
 import java.util.List;
+import java.util.Map;
 
 public class PokemonFixtures {
 
@@ -62,6 +64,11 @@ public class PokemonFixtures {
                 List.of(
                         new EvolutionStage(1, "bulbasaur", 1),
                         new EvolutionStage(2, "ivysaur", 2),
-                        new EvolutionStage(3, "venusaur", 3)));
+                        new EvolutionStage(3, "venusaur", 3)),
+                PokemonEnrichment.empty(1));
+    }
+
+    public static PokemonEnrichment pokemonEnrichment() {
+        return new PokemonEnrichment(1, Map.of("nameEs", "Bulbasaur", "region", "Kanto"));
     }
 }
